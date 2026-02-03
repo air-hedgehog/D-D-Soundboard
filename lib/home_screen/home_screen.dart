@@ -33,38 +33,40 @@ class _HomeScreenState
           },
         ),
       ),
-      child: ReorderableBuilder(
-        enableDraggable: false,
-        children: state.items
-            .map(
-              (e) =>
-                  SizedBox(
-                    width: 100,
-                    height: 100,
-                    child: Column(
-                      spacing: MARGIN_DEFAULT,
-                      children: [Text(e.imagePath), Text(e.soundPath)],
+      child: SafeArea(
+        child: ReorderableBuilder(
+          enableDraggable: false,
+          children: state.items
+              .map(
+                (e) =>
+                    SizedBox(
+                      width: 200,
+                      height: 300,
+                      child: Column(
+                        spacing: MARGIN_DEFAULT,
+                        children: [],
+                      ),
+                    ).wrapInRoundedRectangle(
+                      context.colors().surface,
+                      radius: RADIUS_DEFAULT,
+                      strokeWidth: 1.0,
+                      strokeColor: context.colors().onSurface,
+                      key: Key(e.uuid),
                     ),
-                  ).wrapInRoundedRectangle(
-                    context.colors().surface,
-                    radius: RADIUS_DEFAULT,
-                    strokeWidth: 1.0,
-                    strokeColor: context.colors().onSurface,
-                    key: Key(e.uuid),
-                  ),
-            )
-            .toList(),
-        builder: (children) {
-          return GridView(
-            padding: EdgeInsets.all(MARGIN_DEFAULT),
-            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 100.0,
-              mainAxisSpacing: MARGIN_DEFAULT,
-              crossAxisSpacing: MARGIN_DEFAULT,
-            ),
-            children: children,
-          );
-        },
+              )
+              .toList(),
+          builder: (children) {
+            return GridView(
+              padding: EdgeInsets.all(MARGIN_DEFAULT),
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 100.0,
+                mainAxisSpacing: MARGIN_DEFAULT,
+                crossAxisSpacing: MARGIN_DEFAULT,
+              ),
+              children: children,
+            );
+          },
+        ),
       ),
     );
   }
