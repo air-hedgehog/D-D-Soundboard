@@ -10,4 +10,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get add => 'Add new';
+
+  @override
+  String get adding_new_sounds => 'Adding new sounds';
+
+  @override
+  String get drag_n_drop => 'Drop new sounds here...';
 }

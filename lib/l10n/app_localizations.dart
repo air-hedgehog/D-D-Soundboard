@@ -99,6 +99,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add new'**
   String get add;
+
+  /// No description provided for @adding_new_sounds.
+  ///
+  /// In en, this message translates to:
+  /// **'Adding new sounds'**
+  String get adding_new_sounds;
+
+  /// No description provided for @drag_n_drop.
+  ///
+  /// In en, this message translates to:
+  /// **'Drop new sounds here...'**
+  String get drag_n_drop;
 }
 
 class _AppLocalizationsDelegate

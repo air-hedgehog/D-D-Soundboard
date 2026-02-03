@@ -9,9 +9,5 @@ class HomeViewModel extends AbstractViewModel<HomeState> {
 
   @override
   void getState() {
-    for (int i = 0; i < 40; i++) {
-      currentState.items.add(SoundModel(uuid: Uuid().v4(), imagePath: "Image path", soundPath: "Sound path"));
-    }
-    updateState(currentState);
   }
 }

@@ -1,3 +1,4 @@
+import 'package:d_n_d_soundboard/add_screen/add_screen.dart';
 import 'package:d_n_d_soundboard/constants.dart';
 import 'package:d_n_d_soundboard/extensions.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,6 +22,17 @@ class _HomeScreenState
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        middle: Text(APP_NAME),
+        trailing: CupertinoButton(
+          child: Icon(CupertinoIcons.add_circled),
+          onPressed: () {
+            Navigator.of(
+              context,
+            ).push(CupertinoPageRoute(builder: (context) => AddScreen()));
+          },
+        ),
+      ),
       child: ReorderableBuilder(
         enableDraggable: false,
         children: state.items
