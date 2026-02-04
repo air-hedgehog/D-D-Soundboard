@@ -7,6 +7,8 @@ import 'package:d_n_d_soundboard/di.dart';
 import 'package:d_n_d_soundboard/home_screen/sound_model.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_soloud/flutter_soloud.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:view_model/view_model.dart';
 
 import 'home_state.dart';
@@ -15,12 +17,27 @@ class HomeViewModel extends AbstractViewModel<HomeState> {
   HomeViewModel()
     : super(HomeState(loading: false, items: [], infinitePlayersUuids: {}));
 
+  final SoLoud _soloud = SoLoud.instance;
   final AppDatabase _database = getIt<AppDatabase>();
-  final Map<String, AudioPlayer> players = {};
+  final Map<String, AudioSource> sources = {};
+  final Map<String, SoundHandle> plays = {};
+  final Map<String, StreamSubscription> events = {};
 
   @override
-  void getState() {
-    refresh();
+  void getState() async {
+    await _initAudio();
+    await refresh();
+  }
+
+  Future<void> _initAudio() async {
+    final cacheDir = await getTemporaryDirectory();
+    final soloudTemp = Directory('${cacheDir.path}/SoLoudLoader-Temp-Files');
+
+    if (!await soloudTemp.exists()) {
+      await soloudTemp.create(recursive: true);
+    }
+
+    await _soloud.init();
   }
 
   Future<void> refresh() async {
@@ -41,46 +58,40 @@ class HomeViewModel extends AbstractViewModel<HomeState> {
         ),
       ),
     );
-    List<String> keys = [...players.keys];
-    for (String key in keys) {
-      if (!currentState.items.any((e) => e.uuid == key)) {
-        players[key]?.dispose();
-        players.remove(key);
-      }
-    }
+
     for (var item in currentState.items) {
-      if (!players.containsKey(item.uuid)) {
-        players[item.uuid] = AudioPlayer()..setFilePath(item.sound.path);
-      }
+      sources[item.uuid] = await SoLoud.instance.loadFile(item.sound.path);
+      events[item.uuid] = sources[item.uuid]!.soundEvents.listen((event) async {
+        if (event.event == SoundEventType.handleIsNoMoreValid) {
+          plays.remove(item.uuid);
+          updateState(currentState);
+          if (currentState.infinitePlayersUuids.contains(item.uuid)) {
+            plays[item.uuid] = await SoLoud.instance.play(sources[item.uuid]!);
+          }
+        }
+      });
     }
+
     updateState(currentState.apply(loading: false));
   }
 
-  Future<void> togglePlay(SoundModel model) async {
-    //debugPrint(players[model.uuid]!.getPlayerState());
+  @override
+  void dispose() async {
+    super.dispose();
+    for (var source in sources.values) {
+      await SoLoud.instance.disposeSource(source);
+    }
+  }
 
-    if (players[model.uuid]!.playerState.playing) {
-      await players[model.uuid]!.pause();
+  Future<void> togglePlay(SoundModel model) async {
+    if (plays.containsKey(model.uuid)) {
+      SoLoud.instance.pauseSwitch(plays[model.uuid]!);
     } else {
-      //playLoop(players[model.uuid]!, model);
-      await players[model.uuid]!.play();
-      players[model.uuid]!.setLoopMode(LoopMode.one);
+      plays[model.uuid] = await SoLoud.instance.play(sources[model.uuid]!);
     }
 
     updateState(currentState);
   }
-
-  // Future<void> playLoop(AudioPlayer player, SoundModel model) async {
-  //   players[model.uuid]!.play();
-  //   await player.startPlayer(
-  //     fromURI: model.sound.path,
-  //     whenFinished: () async {
-  //       if (player.isOpen() && currentState.infinitePlayersUuids.contains(model.uuid)) {
-  //         await playLoop(player, model);
-  //       }
-  //     },
-  //   );
-  // }
 
   Future<void> deleteEntry(SoundModel model) async {
     updateState(currentState.apply(loading: true));
@@ -132,5 +143,11 @@ class HomeViewModel extends AbstractViewModel<HomeState> {
       currentState.infinitePlayersUuids.add(model.uuid);
     }
     updateState(currentState);
+  }
+
+  void stop(SoundModel model) async { 
+    currentState.infinitePlayersUuids.remove(model.uuid);
+    await SoLoud.instance.stop(plays[model.uuid]!);
+    //plays.remove(model.uuid);
   }
 }

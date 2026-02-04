@@ -120,17 +120,55 @@ class SoundGridViewHolder extends StatelessWidget {
                   ),
                 ],
               ),
-              CupertinoButton.tinted(
-                foregroundColor: state.infinitePlayersUuids.contains(model.uuid)
-                    ? CupertinoColors.destructiveRed
-                    : null,
-                color: state.infinitePlayersUuids.contains(model.uuid)
-                    ? CupertinoColors.destructiveRed
-                    : CupertinoTheme.of(context).primaryColor,
-                child: Icon(CupertinoIcons.loop),
-                onPressed: () {
-                  viewModel.toggleInfinite(model);
-                },
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Column(
+                  spacing: 1.0,
+                  children: [
+                    CupertinoButton.tinted(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(RADIUS_DEFAULT),
+                      ),
+                      foregroundColor:
+                          state.infinitePlayersUuids.contains(model.uuid)
+                          ? CupertinoColors.destructiveRed
+                          : null,
+                      color: state.infinitePlayersUuids.contains(model.uuid)
+                          ? CupertinoColors.destructiveRed
+                          : CupertinoTheme.of(context).primaryColor,
+                      child: Icon(CupertinoIcons.loop),
+                      onPressed: () {
+                        viewModel.toggleInfinite(model);
+                      },
+                    ),
+                    CupertinoButton.tinted(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(RADIUS_DEFAULT),
+                      ),
+                      foregroundColor: CupertinoColors.destructiveRed,
+                      color: CupertinoColors.destructiveRed,
+                      onPressed: state.loading
+                          ? null
+                          : () {
+                              viewModel.deleteEntry(model);
+                            },
+                      child: Icon(CupertinoIcons.delete),
+                    ),
+                    if (viewModel.plays.containsKey(model.uuid))
+                      CupertinoButton.tinted(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(RADIUS_DEFAULT),
+                        ),
+                        color: CupertinoTheme.of(context).primaryColor,
+                        onPressed: state.loading
+                            ? null
+                            : () {
+                                viewModel.stop(model);
+                              },
+                        child: Icon(CupertinoIcons.stop_circle_fill),
+                      ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -141,8 +179,10 @@ class SoundGridViewHolder extends StatelessWidget {
         .wrapInRoundedRectangle(
           CupertinoColors.transparent,
           radius: RADIUS_DEFAULT,
-          strokeWidth: 2.0,
-          strokeColor: CupertinoTheme.of(context).textTheme.textStyle.color!,
+          strokeWidth: 1.0,
+          strokeColor: CupertinoTheme.of(
+            context,
+          ).textTheme.textStyle.color!.withAlpha(50),
         );
   }
 }
