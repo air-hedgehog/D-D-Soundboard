@@ -1,3 +1,6 @@
 const APP_NAME = "D&D Soundboard";
 const MARGIN_DEFAULT = 8.0;
 const RADIUS_DEFAULT = 8.0;
+const ADDING_ITEM_HEIGHT = 75.0;
+const MAIN_ITEM_WIDTH = 150.0;
+const MAIN_ITEM_HEIGHT = 250.0;

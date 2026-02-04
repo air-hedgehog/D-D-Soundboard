@@ -9,9 +9,11 @@ class DBSoundModel extends Table {
 
   IntColumn get index => integer().named("index")();
 
-  TextColumn get soundName => text().named("soundName")();
+  TextColumn get soundPath => text().named("soundPath")();
 
-  TextColumn get imageName => text().named("imageName").nullable()();
+  TextColumn get displayName => text().named("displayName")();
+
+  TextColumn get imagePath => text().named("imagePath").nullable()();
 }
 
 @DriftDatabase(tables: [DBSoundModel])

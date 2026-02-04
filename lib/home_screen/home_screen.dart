@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:d_n_d_soundboard/add_screen/add_screen.dart';
 import 'package:d_n_d_soundboard/constants.dart';
 import 'package:d_n_d_soundboard/extensions.dart';
@@ -26,10 +28,11 @@ class _HomeScreenState
         middle: Text(APP_NAME),
         trailing: CupertinoButton(
           child: Icon(CupertinoIcons.add_circled),
-          onPressed: () {
-            Navigator.of(
+          onPressed: () async {
+            await Navigator.of(
               context,
             ).push(CupertinoPageRoute(builder: (context) => AddScreen()));
+            viewModel.refresh();
           },
         ),
       ),
@@ -40,26 +43,59 @@ class _HomeScreenState
               .map(
                 (e) =>
                     SizedBox(
-                      width: 200,
-                      height: 300,
-                      child: Column(
-                        spacing: MARGIN_DEFAULT,
-                        children: [],
-                      ),
-                    ).wrapInRoundedRectangle(
-                      context.colors().surface,
-                      radius: RADIUS_DEFAULT,
-                      strokeWidth: 1.0,
-                      strokeColor: context.colors().onSurface,
-                      key: Key(e.uuid),
-                    ),
+                          width: MAIN_ITEM_WIDTH,
+                          height: MAIN_ITEM_HEIGHT,
+                          child: Column(
+                            //spacing: MARGIN_DEFAULT,
+                            children: [
+                              SizedBox(
+                                height: MAIN_ITEM_WIDTH,
+                                width: MAIN_ITEM_WIDTH,
+                                child: e.image == null
+                                    ? Icon(CupertinoIcons.photo)
+                                    : Image.file(
+                                        File(e.image!.path),
+                                        fit: BoxFit.cover,
+                                      ),
+                              ),
+
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(MARGIN_DEFAULT),
+                                  child: Text(
+                                    e.displayName,
+                                    style: CupertinoTheme.of(
+                                      context,
+                                    ).textTheme.textStyle.copyWith(fontSize: 14),
+                                    maxLines: 5,
+                                    softWrap: true,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                        .setOnLongClickListener(() {
+                          viewModel.deleteEntry(e);
+                        })
+                        .wrapInRoundedRectangle(
+                          CupertinoColors.transparent,
+                          radius: RADIUS_DEFAULT,
+                          strokeWidth: 1.0,
+                          strokeColor: CupertinoTheme.of(
+                            context,
+                          ).primaryContrastingColor,
+                          key: Key(e.uuid),
+                        ),
               )
               .toList(),
           builder: (children) {
             return GridView(
               padding: EdgeInsets.all(MARGIN_DEFAULT),
               gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 100.0,
+                maxCrossAxisExtent: MAIN_ITEM_WIDTH,
+                childAspectRatio: MAIN_ITEM_WIDTH / MAIN_ITEM_HEIGHT,
                 mainAxisSpacing: MARGIN_DEFAULT,
                 crossAxisSpacing: MARGIN_DEFAULT,
               ),

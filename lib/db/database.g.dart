@@ -27,30 +27,47 @@ class $DBSoundModelTable extends DBSoundModel
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _soundNameMeta = const VerificationMeta(
-    'soundName',
+  static const VerificationMeta _soundPathMeta = const VerificationMeta(
+    'soundPath',
   );
   @override
-  late final GeneratedColumn<String> soundName = GeneratedColumn<String>(
-    'soundName',
+  late final GeneratedColumn<String> soundPath = GeneratedColumn<String>(
+    'soundPath',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _imageNameMeta = const VerificationMeta(
-    'imageName',
+  static const VerificationMeta _displayNameMeta = const VerificationMeta(
+    'displayName',
   );
   @override
-  late final GeneratedColumn<String> imageName = GeneratedColumn<String>(
-    'imageName',
+  late final GeneratedColumn<String> displayName = GeneratedColumn<String>(
+    'displayName',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _imagePathMeta = const VerificationMeta(
+    'imagePath',
+  );
+  @override
+  late final GeneratedColumn<String> imagePath = GeneratedColumn<String>(
+    'imagePath',
     aliasedName,
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
   @override
-  List<GeneratedColumn> get $columns => [uuid, index, soundName, imageName];
+  List<GeneratedColumn> get $columns => [
+    uuid,
+    index,
+    soundPath,
+    displayName,
+    imagePath,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -79,18 +96,29 @@ class $DBSoundModelTable extends DBSoundModel
     } else if (isInserting) {
       context.missing(_indexMeta);
     }
-    if (data.containsKey('soundName')) {
+    if (data.containsKey('soundPath')) {
       context.handle(
-        _soundNameMeta,
-        soundName.isAcceptableOrUnknown(data['soundName']!, _soundNameMeta),
+        _soundPathMeta,
+        soundPath.isAcceptableOrUnknown(data['soundPath']!, _soundPathMeta),
       );
     } else if (isInserting) {
-      context.missing(_soundNameMeta);
+      context.missing(_soundPathMeta);
     }
-    if (data.containsKey('imageName')) {
+    if (data.containsKey('displayName')) {
       context.handle(
-        _imageNameMeta,
-        imageName.isAcceptableOrUnknown(data['imageName']!, _imageNameMeta),
+        _displayNameMeta,
+        displayName.isAcceptableOrUnknown(
+          data['displayName']!,
+          _displayNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_displayNameMeta);
+    }
+    if (data.containsKey('imagePath')) {
+      context.handle(
+        _imagePathMeta,
+        imagePath.isAcceptableOrUnknown(data['imagePath']!, _imagePathMeta),
       );
     }
     return context;
@@ -110,13 +138,17 @@ class $DBSoundModelTable extends DBSoundModel
         DriftSqlType.int,
         data['${effectivePrefix}index'],
       )!,
-      soundName: attachedDatabase.typeMapping.read(
+      soundPath: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}soundName'],
+        data['${effectivePrefix}soundPath'],
       )!,
-      imageName: attachedDatabase.typeMapping.read(
+      displayName: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}imageName'],
+        data['${effectivePrefix}displayName'],
+      )!,
+      imagePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}imagePath'],
       ),
     );
   }
@@ -131,22 +163,25 @@ class DBSoundModelData extends DataClass
     implements Insertable<DBSoundModelData> {
   final String uuid;
   final int index;
-  final String soundName;
-  final String? imageName;
+  final String soundPath;
+  final String displayName;
+  final String? imagePath;
   const DBSoundModelData({
     required this.uuid,
     required this.index,
-    required this.soundName,
-    this.imageName,
+    required this.soundPath,
+    required this.displayName,
+    this.imagePath,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['uuid'] = Variable<String>(uuid);
     map['index'] = Variable<int>(index);
-    map['soundName'] = Variable<String>(soundName);
-    if (!nullToAbsent || imageName != null) {
-      map['imageName'] = Variable<String>(imageName);
+    map['soundPath'] = Variable<String>(soundPath);
+    map['displayName'] = Variable<String>(displayName);
+    if (!nullToAbsent || imagePath != null) {
+      map['imagePath'] = Variable<String>(imagePath);
     }
     return map;
   }
@@ -155,10 +190,11 @@ class DBSoundModelData extends DataClass
     return DBSoundModelCompanion(
       uuid: Value(uuid),
       index: Value(index),
-      soundName: Value(soundName),
-      imageName: imageName == null && nullToAbsent
+      soundPath: Value(soundPath),
+      displayName: Value(displayName),
+      imagePath: imagePath == null && nullToAbsent
           ? const Value.absent()
-          : Value(imageName),
+          : Value(imagePath),
     );
   }
 
@@ -170,8 +206,9 @@ class DBSoundModelData extends DataClass
     return DBSoundModelData(
       uuid: serializer.fromJson<String>(json['uuid']),
       index: serializer.fromJson<int>(json['index']),
-      soundName: serializer.fromJson<String>(json['soundName']),
-      imageName: serializer.fromJson<String?>(json['imageName']),
+      soundPath: serializer.fromJson<String>(json['soundPath']),
+      displayName: serializer.fromJson<String>(json['displayName']),
+      imagePath: serializer.fromJson<String?>(json['imagePath']),
     );
   }
   @override
@@ -180,28 +217,34 @@ class DBSoundModelData extends DataClass
     return <String, dynamic>{
       'uuid': serializer.toJson<String>(uuid),
       'index': serializer.toJson<int>(index),
-      'soundName': serializer.toJson<String>(soundName),
-      'imageName': serializer.toJson<String?>(imageName),
+      'soundPath': serializer.toJson<String>(soundPath),
+      'displayName': serializer.toJson<String>(displayName),
+      'imagePath': serializer.toJson<String?>(imagePath),
     };
   }
 
   DBSoundModelData copyWith({
     String? uuid,
     int? index,
-    String? soundName,
-    Value<String?> imageName = const Value.absent(),
+    String? soundPath,
+    String? displayName,
+    Value<String?> imagePath = const Value.absent(),
   }) => DBSoundModelData(
     uuid: uuid ?? this.uuid,
     index: index ?? this.index,
-    soundName: soundName ?? this.soundName,
-    imageName: imageName.present ? imageName.value : this.imageName,
+    soundPath: soundPath ?? this.soundPath,
+    displayName: displayName ?? this.displayName,
+    imagePath: imagePath.present ? imagePath.value : this.imagePath,
   );
   DBSoundModelData copyWithCompanion(DBSoundModelCompanion data) {
     return DBSoundModelData(
       uuid: data.uuid.present ? data.uuid.value : this.uuid,
       index: data.index.present ? data.index.value : this.index,
-      soundName: data.soundName.present ? data.soundName.value : this.soundName,
-      imageName: data.imageName.present ? data.imageName.value : this.imageName,
+      soundPath: data.soundPath.present ? data.soundPath.value : this.soundPath,
+      displayName: data.displayName.present
+          ? data.displayName.value
+          : this.displayName,
+      imagePath: data.imagePath.present ? data.imagePath.value : this.imagePath,
     );
   }
 
@@ -210,58 +253,67 @@ class DBSoundModelData extends DataClass
     return (StringBuffer('DBSoundModelData(')
           ..write('uuid: $uuid, ')
           ..write('index: $index, ')
-          ..write('soundName: $soundName, ')
-          ..write('imageName: $imageName')
+          ..write('soundPath: $soundPath, ')
+          ..write('displayName: $displayName, ')
+          ..write('imagePath: $imagePath')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(uuid, index, soundName, imageName);
+  int get hashCode =>
+      Object.hash(uuid, index, soundPath, displayName, imagePath);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is DBSoundModelData &&
           other.uuid == this.uuid &&
           other.index == this.index &&
-          other.soundName == this.soundName &&
-          other.imageName == this.imageName);
+          other.soundPath == this.soundPath &&
+          other.displayName == this.displayName &&
+          other.imagePath == this.imagePath);
 }
 
 class DBSoundModelCompanion extends UpdateCompanion<DBSoundModelData> {
   final Value<String> uuid;
   final Value<int> index;
-  final Value<String> soundName;
-  final Value<String?> imageName;
+  final Value<String> soundPath;
+  final Value<String> displayName;
+  final Value<String?> imagePath;
   final Value<int> rowid;
   const DBSoundModelCompanion({
     this.uuid = const Value.absent(),
     this.index = const Value.absent(),
-    this.soundName = const Value.absent(),
-    this.imageName = const Value.absent(),
+    this.soundPath = const Value.absent(),
+    this.displayName = const Value.absent(),
+    this.imagePath = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   DBSoundModelCompanion.insert({
     required String uuid,
     required int index,
-    required String soundName,
-    this.imageName = const Value.absent(),
+    required String soundPath,
+    required String displayName,
+    this.imagePath = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : uuid = Value(uuid),
        index = Value(index),
-       soundName = Value(soundName);
+       soundPath = Value(soundPath),
+       displayName = Value(displayName);
   static Insertable<DBSoundModelData> custom({
     Expression<String>? uuid,
     Expression<int>? index,
-    Expression<String>? soundName,
-    Expression<String>? imageName,
+    Expression<String>? soundPath,
+    Expression<String>? displayName,
+    Expression<String>? imagePath,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (uuid != null) 'uuid': uuid,
       if (index != null) 'index': index,
-      if (soundName != null) 'soundName': soundName,
-      if (imageName != null) 'imageName': imageName,
+      if (soundPath != null) 'soundPath': soundPath,
+      if (displayName != null) 'displayName': displayName,
+      if (imagePath != null) 'imagePath': imagePath,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -269,15 +321,17 @@ class DBSoundModelCompanion extends UpdateCompanion<DBSoundModelData> {
   DBSoundModelCompanion copyWith({
     Value<String>? uuid,
     Value<int>? index,
-    Value<String>? soundName,
-    Value<String?>? imageName,
+    Value<String>? soundPath,
+    Value<String>? displayName,
+    Value<String?>? imagePath,
     Value<int>? rowid,
   }) {
     return DBSoundModelCompanion(
       uuid: uuid ?? this.uuid,
       index: index ?? this.index,
-      soundName: soundName ?? this.soundName,
-      imageName: imageName ?? this.imageName,
+      soundPath: soundPath ?? this.soundPath,
+      displayName: displayName ?? this.displayName,
+      imagePath: imagePath ?? this.imagePath,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -291,11 +345,14 @@ class DBSoundModelCompanion extends UpdateCompanion<DBSoundModelData> {
     if (index.present) {
       map['index'] = Variable<int>(index.value);
     }
-    if (soundName.present) {
-      map['soundName'] = Variable<String>(soundName.value);
+    if (soundPath.present) {
+      map['soundPath'] = Variable<String>(soundPath.value);
     }
-    if (imageName.present) {
-      map['imageName'] = Variable<String>(imageName.value);
+    if (displayName.present) {
+      map['displayName'] = Variable<String>(displayName.value);
+    }
+    if (imagePath.present) {
+      map['imagePath'] = Variable<String>(imagePath.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -308,8 +365,9 @@ class DBSoundModelCompanion extends UpdateCompanion<DBSoundModelData> {
     return (StringBuffer('DBSoundModelCompanion(')
           ..write('uuid: $uuid, ')
           ..write('index: $index, ')
-          ..write('soundName: $soundName, ')
-          ..write('imageName: $imageName, ')
+          ..write('soundPath: $soundPath, ')
+          ..write('displayName: $displayName, ')
+          ..write('imagePath: $imagePath, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -331,16 +389,18 @@ typedef $$DBSoundModelTableCreateCompanionBuilder =
     DBSoundModelCompanion Function({
       required String uuid,
       required int index,
-      required String soundName,
-      Value<String?> imageName,
+      required String soundPath,
+      required String displayName,
+      Value<String?> imagePath,
       Value<int> rowid,
     });
 typedef $$DBSoundModelTableUpdateCompanionBuilder =
     DBSoundModelCompanion Function({
       Value<String> uuid,
       Value<int> index,
-      Value<String> soundName,
-      Value<String?> imageName,
+      Value<String> soundPath,
+      Value<String> displayName,
+      Value<String?> imagePath,
       Value<int> rowid,
     });
 
@@ -363,13 +423,18 @@ class $$DBSoundModelTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get soundName => $composableBuilder(
-    column: $table.soundName,
+  ColumnFilters<String> get soundPath => $composableBuilder(
+    column: $table.soundPath,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get imageName => $composableBuilder(
-    column: $table.imageName,
+  ColumnFilters<String> get displayName => $composableBuilder(
+    column: $table.displayName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -393,13 +458,18 @@ class $$DBSoundModelTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get soundName => $composableBuilder(
-    column: $table.soundName,
+  ColumnOrderings<String> get soundPath => $composableBuilder(
+    column: $table.soundPath,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get imageName => $composableBuilder(
-    column: $table.imageName,
+  ColumnOrderings<String> get displayName => $composableBuilder(
+    column: $table.displayName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
     builder: (column) => ColumnOrderings(column),
   );
 }
@@ -419,11 +489,16 @@ class $$DBSoundModelTableAnnotationComposer
   GeneratedColumn<int> get index =>
       $composableBuilder(column: $table.index, builder: (column) => column);
 
-  GeneratedColumn<String> get soundName =>
-      $composableBuilder(column: $table.soundName, builder: (column) => column);
+  GeneratedColumn<String> get soundPath =>
+      $composableBuilder(column: $table.soundPath, builder: (column) => column);
 
-  GeneratedColumn<String> get imageName =>
-      $composableBuilder(column: $table.imageName, builder: (column) => column);
+  GeneratedColumn<String> get displayName => $composableBuilder(
+    column: $table.displayName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get imagePath =>
+      $composableBuilder(column: $table.imagePath, builder: (column) => column);
 }
 
 class $$DBSoundModelTableTableManager
@@ -459,28 +534,32 @@ class $$DBSoundModelTableTableManager
               ({
                 Value<String> uuid = const Value.absent(),
                 Value<int> index = const Value.absent(),
-                Value<String> soundName = const Value.absent(),
-                Value<String?> imageName = const Value.absent(),
+                Value<String> soundPath = const Value.absent(),
+                Value<String> displayName = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DBSoundModelCompanion(
                 uuid: uuid,
                 index: index,
-                soundName: soundName,
-                imageName: imageName,
+                soundPath: soundPath,
+                displayName: displayName,
+                imagePath: imagePath,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
                 required String uuid,
                 required int index,
-                required String soundName,
-                Value<String?> imageName = const Value.absent(),
+                required String soundPath,
+                required String displayName,
+                Value<String?> imagePath = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DBSoundModelCompanion.insert(
                 uuid: uuid,
                 index: index,
-                soundName: soundName,
-                imageName: imageName,
+                soundPath: soundPath,
+                displayName: displayName,
+                imagePath: imagePath,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

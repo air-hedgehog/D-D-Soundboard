@@ -2,10 +2,12 @@ import 'package:d_n_d_soundboard/constants.dart';
 import 'package:d_n_d_soundboard/home_screen/home_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'di.dart';
 import 'l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initDI();
   runApp(const MyApp());
 }
 
