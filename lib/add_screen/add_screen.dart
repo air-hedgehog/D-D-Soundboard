@@ -31,126 +31,124 @@ class _AddScreenState extends State<AddScreen> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: Text(context
-            .l10n()
-            .adding_new_sounds),
+        middle: Text(context.l10n().adding_new_sounds),
         trailing: toAddEntries.isEmpty
             ? null
             : Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CupertinoButton(
-              child: Icon(CupertinoIcons.floppy_disk),
-              onPressed: () async {
-                List<SoundModel> models = [];
-                var uuid = Uuid();
-                for (int i = 0; i < toAddEntries.length; i++) {
-                  models.add(SoundModel(uuid: uuid.v4(),
-                      image: toAddEntries[i].image,
-                      sound: toAddEntries[i].sound,
-                      index: i,
-                      displayName: toAddEntries[i].displayName));
-                }
-                await saveFiles(models);
-                Navigator.pop(context);
-              },
-            ),
-            CupertinoButton(
-              child: Icon(CupertinoIcons.add),
-              onPressed: () {
-                selectMp3();
-              },
-            ),
-            CupertinoButton(
-              child: Icon(CupertinoIcons.clear),
-              onPressed: () {
-                setState(() {
-                  toAddEntries.clear();
-                });
-              },
-            ),
-          ],
-        ),
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CupertinoButton(
+                    child: Icon(CupertinoIcons.floppy_disk),
+                    onPressed: () async {
+                      int lastIndex = (await _database
+                          .select(_database.dBSoundModel)
+                          .get()).length;
+                      List<SoundModel> models = [];
+                      var uuid = Uuid();
+                      for (int i = 0; i < toAddEntries.length; i++) {
+                        models.add(
+                          SoundModel(
+                            uuid: uuid.v4(),
+                            image: toAddEntries[i].image,
+                            sound: toAddEntries[i].sound,
+                            index: lastIndex,
+                            displayName: toAddEntries[i].displayName,
+                          ),
+                        );
+                        lastIndex++;
+                      }
+                      await saveFiles(models);
+                      Navigator.pop(context);
+                    },
+                  ),
+                  CupertinoButton(
+                    child: Icon(CupertinoIcons.add),
+                    onPressed: () {
+                      selectMp3();
+                    },
+                  ),
+                  CupertinoButton(
+                    child: Icon(CupertinoIcons.clear),
+                    onPressed: () {
+                      setState(() {
+                        toAddEntries.clear();
+                      });
+                    },
+                  ),
+                ],
+              ),
       ),
       child: SafeArea(
         child: toAddEntries.isNotEmpty
             ? ListView.builder(
-          padding: EdgeInsets.all(MARGIN_DEFAULT),
-          itemCount: toAddEntries.length,
-          itemBuilder: (context, index) {
-            return ToAddViewHolder(
-              entry: toAddEntries[index],
-              onDeleteClick: (entry) {
-                setState(() {
-                  toAddEntries.remove(entry);
-                });
-              },
-              onImageClick: (entry) async {
-                FilePickerResult? result = await FilePicker.platform
-                    .pickFiles(
-                  allowMultiple: false,
-                  type: FileType.custom,
-                  allowedExtensions: ['jpg', 'jpeg'],
-                );
+                padding: EdgeInsets.all(MARGIN_DEFAULT),
+                itemCount: toAddEntries.length,
+                itemBuilder: (context, index) {
+                  return ToAddViewHolder(
+                    entry: toAddEntries[index],
+                    onDeleteClick: (entry) {
+                      setState(() {
+                        toAddEntries.remove(entry);
+                      });
+                    },
+                    onImageClick: (entry) async {
+                      FilePickerResult? result = await FilePicker.platform
+                          .pickFiles(
+                            allowMultiple: false,
+                            type: FileType.custom,
+                            allowedExtensions: ['jpg', 'jpeg'],
+                          );
 
-                if (result != null) {
-                  setState(() {
-                    entry.image = result.xFiles.first;
-                  });
-                }
-              },
-            );
-          },
-        )
+                      if (result != null) {
+                        setState(() {
+                          entry.image = result.xFiles.first;
+                        });
+                      }
+                    },
+                  );
+                },
+              )
             : DropTarget(
-          onDragDone: (detail) async {
-            onFilesSelected(detail.files);
-          },
-          onDragEntered: (detail) {
-            setState(() {
-              _dragging = true;
-            });
-          },
-          onDragExited: (detail) {
-            setState(() {
-              _dragging = false;
-            });
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(MARGIN_DEFAULT),
-            child:
-            Center(
-              child: Text(
-                context
-                    .l10n()
-                    .drag_n_drop,
-                style: CupertinoTheme
-                    .of(
-                  context,
-                )
-                    .textTheme
-                    .textStyle,
+                onDragDone: (detail) async {
+                  onFilesSelected(detail.files);
+                },
+                onDragEntered: (detail) {
+                  setState(() {
+                    _dragging = true;
+                  });
+                },
+                onDragExited: (detail) {
+                  setState(() {
+                    _dragging = false;
+                  });
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(MARGIN_DEFAULT),
+                  child:
+                      Center(
+                            child: Text(
+                              context.l10n().drag_n_drop,
+                              style: CupertinoTheme.of(
+                                context,
+                              ).textTheme.textStyle,
+                            ),
+                          )
+                          .wrapInRoundedRectangle(
+                            _loading
+                                ? context.colors().error.withAlpha(100)
+                                : (_dragging
+                                      ? context
+                                            .colors()
+                                            .primaryContainer
+                                            .withAlpha(100)
+                                      : CupertinoColors.transparent),
+                            radius: RADIUS_DEFAULT,
+                          )
+                          .setOnClickListener(() {
+                            selectMp3();
+                          }),
+                ),
               ),
-            )
-                .wrapInRoundedRectangle(
-              _loading
-                  ? context
-                  .colors()
-                  .error
-                  .withAlpha(100)
-                  : (_dragging
-                  ? context
-                  .colors()
-                  .primaryContainer
-                  .withAlpha(100)
-                  : CupertinoColors.transparent),
-              radius: RADIUS_DEFAULT,
-            )
-                .setOnClickListener(() {
-              selectMp3();
-            }),
-          ),
-        ),
       ),
     );
   }
@@ -196,9 +194,11 @@ class _AddScreenState extends State<AddScreen> {
     });
   }
 
-  Future<void> saveFile(SoundModel entry,
-      Directory directory,
-      AppDatabase database,) async {
+  Future<void> saveFile(
+    SoundModel entry,
+    Directory directory,
+    AppDatabase database,
+  ) async {
     String? soundPath = await saveSound(entry.sound, directory);
 
     if (soundPath == null) {
@@ -212,14 +212,14 @@ class _AddScreenState extends State<AddScreen> {
     await database
         .into(database.dBSoundModel)
         .insert(
-      DBSoundModelCompanion.insert(
-        index: entry.index,
-        uuid: entry.uuid,
-        soundPath: soundPath,
-        displayName: entry.displayName,
-        imagePath: Value(imagePath),
-      ),
-    );
+          DBSoundModelCompanion.insert(
+            index: entry.index,
+            uuid: entry.uuid,
+            soundPath: soundPath,
+            displayName: entry.displayName,
+            imagePath: Value(imagePath),
+          ),
+        );
   }
 
   Future<String?> saveSound(XFile sound, Directory directory) async {
@@ -282,63 +282,50 @@ class _ToAddViewHolderState extends State<ToAddViewHolder> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: MARGIN_DEFAULT / 2),
       child:
-      SizedBox(
-        height: ADDING_ITEM_HEIGHT,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          spacing: MARGIN_DEFAULT,
-          children: [
-            SizedBox(
-              width: ADDING_ITEM_HEIGHT,
-              height: ADDING_ITEM_HEIGHT,
-              child: widget.entry.image == null
-                  ? Icon(CupertinoIcons.photo)
-                  : Image.file(
-                File(widget.entry.image!.path),
-                fit: BoxFit.cover,
-              ),
-            ).setOnClickListener(() => widget.onImageClick(widget.entry)),
+          SizedBox(
+            height: ADDING_ITEM_HEIGHT,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              spacing: MARGIN_DEFAULT,
+              children: [
+                SizedBox(
+                  width: ADDING_ITEM_HEIGHT,
+                  height: ADDING_ITEM_HEIGHT,
+                  child: widget.entry.image == null
+                      ? Icon(CupertinoIcons.photo)
+                      : Image.file(
+                          File(widget.entry.image!.path),
+                          fit: BoxFit.cover,
+                        ),
+                ).setOnClickListener(() => widget.onImageClick(widget.entry)),
 
-            Expanded(
-              child: EditableText(
-                controller: _controller,
-                focusNode: FocusNode(),
-                showSelectionHandles: true,
-                enableInteractiveSelection: true,
-                style: CupertinoTheme
-                    .of(context)
-                    .textTheme
-                    .textStyle,
-                cursorColor: CupertinoTheme
-                    .of(context)
-                    .primaryColor,
-                selectionColor: CupertinoTheme
-                    .of(context)
-                    .primaryColor,
-                backgroundCursorColor: CupertinoTheme
-                    .of(
-                  context,
-                )
-                    .primaryContrastingColor,
-              ),
-            ),
+                Expanded(
+                  child: EditableText(
+                    controller: _controller,
+                    focusNode: FocusNode(),
+                    showSelectionHandles: true,
+                    enableInteractiveSelection: true,
+                    style: CupertinoTheme.of(context).textTheme.textStyle,
+                    cursorColor: CupertinoTheme.of(context).primaryColor,
+                    selectionColor: CupertinoTheme.of(context).primaryColor,
+                    backgroundCursorColor: CupertinoTheme.of(
+                      context,
+                    ).primaryContrastingColor,
+                  ),
+                ),
 
-            CupertinoButton(
-              child: Icon(CupertinoIcons.delete),
-              onPressed: () => widget.onDeleteClick(widget.entry),
+                CupertinoButton(
+                  child: Icon(CupertinoIcons.delete),
+                  onPressed: () => widget.onDeleteClick(widget.entry),
+                ),
+              ],
             ),
-          ],
-        ),
-      ).wrapInRoundedRectangle(
-        CupertinoColors.transparent,
-        radius: RADIUS_DEFAULT,
-        strokeWidth: 1.0,
-        strokeColor: CupertinoTheme
-            .of(context)
-            .textTheme
-            .textStyle
-            .color!,
-      ),
+          ).wrapInRoundedRectangle(
+            CupertinoColors.transparent,
+            radius: RADIUS_DEFAULT,
+            strokeWidth: 1.0,
+            strokeColor: CupertinoTheme.of(context).textTheme.textStyle.color!,
+          ),
     );
   }
 }

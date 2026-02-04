@@ -14,6 +14,16 @@ class SoundModel {
     required this.index,
     required this.displayName,
   });
+
+  @override
+  int get hashCode {
+    return uuid.hashCode;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is SoundModel && other.uuid == this.uuid;
+  }
 }
 
 class ToAddEntry {

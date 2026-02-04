@@ -7,6 +7,11 @@ part 'home_state.g.dart';
 class HomeState {
   final bool loading;
   final List<SoundModel> items;
+  final Set<String> infinitePlayersUuids;
 
-  HomeState({required this.loading, required this.items});
+  HomeState({
+    required this.loading,
+    required this.items,
+    required this.infinitePlayersUuids,
+  });
 }

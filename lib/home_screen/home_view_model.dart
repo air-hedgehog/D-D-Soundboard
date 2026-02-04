@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cross_file/cross_file.dart';
@@ -11,9 +12,11 @@ import 'package:view_model/view_model.dart';
 import 'home_state.dart';
 
 class HomeViewModel extends AbstractViewModel<HomeState> {
-  HomeViewModel() : super(HomeState(loading: false, items: []));
+  HomeViewModel()
+    : super(HomeState(loading: false, items: [], infinitePlayersUuids: {}));
 
   final AppDatabase _database = getIt<AppDatabase>();
+  final Map<String, AudioPlayer> players = {};
 
   @override
   void getState() {
@@ -31,20 +34,55 @@ class HomeViewModel extends AbstractViewModel<HomeState> {
       allItems.map(
         (e) => SoundModel(
           uuid: e.uuid,
-          image: e.imagePath == null
-              ? null
-              : XFile(e.imagePath!),
+          image: e.imagePath == null ? null : XFile(e.imagePath!),
           sound: XFile(e.soundPath),
           index: e.index,
           displayName: e.displayName,
         ),
       ),
     );
+    List<String> keys = [...players.keys];
+    for (String key in keys) {
+      if (!currentState.items.any((e) => e.uuid == key)) {
+        players[key]?.dispose();
+        players.remove(key);
+      }
+    }
+    for (var item in currentState.items) {
+      if (!players.containsKey(item.uuid)) {
+        players[item.uuid] = AudioPlayer()..setFilePath(item.sound.path);
+      }
+    }
     updateState(currentState.apply(loading: false));
   }
 
-  Future<void> deleteEntry(SoundModel model) async {
+  Future<void> togglePlay(SoundModel model) async {
+    //debugPrint(players[model.uuid]!.getPlayerState());
 
+    if (players[model.uuid]!.playerState.playing) {
+      await players[model.uuid]!.pause();
+    } else {
+      //playLoop(players[model.uuid]!, model);
+      await players[model.uuid]!.play();
+      players[model.uuid]!.setLoopMode(LoopMode.one);
+    }
+
+    updateState(currentState);
+  }
+
+  // Future<void> playLoop(AudioPlayer player, SoundModel model) async {
+  //   players[model.uuid]!.play();
+  //   await player.startPlayer(
+  //     fromURI: model.sound.path,
+  //     whenFinished: () async {
+  //       if (player.isOpen() && currentState.infinitePlayersUuids.contains(model.uuid)) {
+  //         await playLoop(player, model);
+  //       }
+  //     },
+  //   );
+  // }
+
+  Future<void> deleteEntry(SoundModel model) async {
     updateState(currentState.apply(loading: true));
 
     try {
@@ -72,14 +110,27 @@ class HomeViewModel extends AbstractViewModel<HomeState> {
   Future<void> saveNewOrder(List<dynamic> newItems) async {
     for (int i = 0; i < newItems.length; i++) {
       newItems[i].index = i;
-      await _database.into(_database.dBSoundModel).insertOnConflictUpdate(DBSoundModelCompanion.insert(
-        index: newItems[i].index,
-        uuid: newItems[i].uuid,
-        soundPath: (newItems[i] as SoundModel).sound.path,
-        displayName: newItems[i].displayName,
-        imagePath: Value((newItems[i] as SoundModel).image?.path),
-      ));
+      await _database
+          .into(_database.dBSoundModel)
+          .insertOnConflictUpdate(
+            DBSoundModelCompanion.insert(
+              index: newItems[i].index,
+              uuid: newItems[i].uuid,
+              soundPath: (newItems[i] as SoundModel).sound.path,
+              displayName: newItems[i].displayName,
+              imagePath: Value((newItems[i] as SoundModel).image?.path),
+            ),
+          );
     }
     await refresh();
+  }
+
+  Future<void> toggleInfinite(SoundModel model) async {
+    if (currentState.infinitePlayersUuids.contains(model.uuid)) {
+      currentState.infinitePlayersUuids.remove(model.uuid);
+    } else {
+      currentState.infinitePlayersUuids.add(model.uuid);
+    }
+    updateState(currentState);
   }
 }

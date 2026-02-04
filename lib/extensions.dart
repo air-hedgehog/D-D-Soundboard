@@ -36,23 +36,42 @@ extension RoundedRectangleWidget on Widget {
   }
 
   Widget wrapInRoundedRectangle(
-    Color color, {
-    Color strokeColor = Colors.transparent,
-    double strokeWidth = 0.0,
-    double radius = 0.0,
+      Color fillColor, {
+        Color strokeColor = Colors.transparent,
+        double strokeWidth = 0.0,
+        double radius = 0.0,
         Key? key,
-  }) {
-    return Container(
+      }) {
+    final borderRadius = BorderRadius.circular(radius);
+
+    return Stack(
       key: key,
-      decoration: BoxDecoration(
-        border: Border.all(width: strokeWidth, color: strokeColor),
-        borderRadius: BorderRadius.circular(radius),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(radius),
-        clipBehavior: Clip.hardEdge,
-        child: Material(color: color, child: this),
-      ),
+      children: [
+        // CONTENT + CLIP + BACKGROUND
+        ClipRRect(
+          borderRadius: borderRadius,
+          child: ColoredBox(
+            color: fillColor,
+            child: this,
+          ),
+        ),
+
+        // BORDER (paint only, no layout impact)
+        if (strokeWidth > 0)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: borderRadius,
+                  border: Border.all(
+                    color: strokeColor,
+                    width: strokeWidth,
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 

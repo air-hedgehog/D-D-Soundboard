@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:d_n_d_soundboard/add_screen/add_screen.dart';
 import 'package:d_n_d_soundboard/constants.dart';
 import 'package:d_n_d_soundboard/extensions.dart';
@@ -45,7 +44,14 @@ class _HomeScreenState
             viewModel.saveNewOrder(reorderedListFunction(state.items));
           },
           children: state.items
-              .map((e) => SoundGridViewHolder(key: Key(e.uuid), model: e))
+              .map(
+                (e) => SoundGridViewHolder(
+                  key: Key(e.uuid),
+                  model: e,
+                  state: state,
+                  viewModel: viewModel,
+                ),
+              )
               .toList(),
           builder: (children) {
             return GridView(
@@ -65,62 +71,78 @@ class _HomeScreenState
   }
 }
 
-class SoundGridViewHolder extends StatefulWidget {
-  const SoundGridViewHolder({super.key, required this.model});
+class SoundGridViewHolder extends StatelessWidget {
+  const SoundGridViewHolder({
+    super.key,
+    required this.model,
+    required this.state,
+    required this.viewModel,
+  });
 
   final SoundModel model;
-
-  @override
-  State<SoundGridViewHolder> createState() => _SoundGridViewHolderState();
-}
-
-class _SoundGridViewHolderState extends State<SoundGridViewHolder> {
-  final AudioPlayer player = AudioPlayer();
+  final HomeState state;
+  final HomeViewModel viewModel;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: MAIN_ITEM_WIDTH,
-      height: MAIN_ITEM_HEIGHT,
-      child: Column(
-        spacing: MARGIN_DEFAULT,
-        children: [
-          SizedBox(
-            height: MAIN_ITEM_WIDTH,
-            width: MAIN_ITEM_WIDTH,
-            child: widget.model.image == null
-                ? Icon(CupertinoIcons.photo)
-                : Image.file(File(widget.model.image!.path), fit: BoxFit.cover),
-          ),
+          width: MAIN_ITEM_WIDTH,
+          height: MAIN_ITEM_HEIGHT,
+          child: Stack(
+            alignment: Alignment.topRight,
+            children: [
+              Column(
+                children: [
+                  SizedBox(
+                    height: MAIN_ITEM_WIDTH,
+                    width: MAIN_ITEM_WIDTH,
+                    child: model.image == null
+                        ? Icon(CupertinoIcons.photo)
+                        : Image.file(
+                            File(model.image!.path),
+                            fit: BoxFit.cover,
+                          ),
+                  ),
 
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(MARGIN_DEFAULT),
-              child: Text(
-                widget.model.displayName,
-                style: CupertinoTheme.of(
-                  context,
-                ).textTheme.textStyle.copyWith(fontSize: 14),
-                maxLines: 5,
-                softWrap: true,
-                overflow: TextOverflow.ellipsis,
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(MARGIN_DEFAULT),
+                      child: Text(
+                        model.displayName,
+                        style: CupertinoTheme.of(
+                          context,
+                        ).textTheme.textStyle.copyWith(fontSize: 14),
+                        maxLines: 5,
+                        softWrap: true,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
+              CupertinoButton.tinted(
+                foregroundColor: state.infinitePlayersUuids.contains(model.uuid)
+                    ? CupertinoColors.destructiveRed
+                    : null,
+                color: state.infinitePlayersUuids.contains(model.uuid)
+                    ? CupertinoColors.destructiveRed
+                    : CupertinoTheme.of(context).primaryColor,
+                child: Icon(CupertinoIcons.loop),
+                onPressed: () {
+                  viewModel.toggleInfinite(model);
+                },
+              ),
+            ],
           ),
-        ],
-      ),
-    ).setOnClickListener(() {
-      if (player.state == PlayerState.playing) {
-        player.pause();
-      } else {
-        player.play(DeviceFileSource(widget.model.sound.path));
-      }
-
-    }).wrapInRoundedRectangle(
-      CupertinoColors.transparent,
-      radius: RADIUS_DEFAULT,
-      strokeWidth: 1.0,
-      strokeColor: CupertinoTheme.of(context).primaryContrastingColor,
-    );
+        )
+        .setOnClickListener(() {
+          viewModel.togglePlay(model);
+        })
+        .wrapInRoundedRectangle(
+          CupertinoColors.transparent,
+          radius: RADIUS_DEFAULT,
+          strokeWidth: 2.0,
+          strokeColor: CupertinoTheme.of(context).textTheme.textStyle.color!,
+        );
   }
 }

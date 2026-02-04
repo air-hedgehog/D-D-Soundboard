@@ -7,6 +7,13 @@ part of 'home_state.dart';
 // **************************************************************************
 
 extension HomeStateApplyExt on HomeState {
-  HomeState apply({bool? loading, List<SoundModel>? items}) =>
-      HomeState(loading: loading ?? this.loading, items: items ?? this.items);
+  HomeState apply({
+    bool? loading,
+    List<SoundModel>? items,
+    Set<String>? infinitePlayersUuids,
+  }) => HomeState(
+    loading: loading ?? this.loading,
+    items: items ?? this.items,
+    infinitePlayersUuids: infinitePlayersUuids ?? this.infinitePlayersUuids,
+  );
 }
