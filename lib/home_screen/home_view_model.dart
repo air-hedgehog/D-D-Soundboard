@@ -43,7 +43,7 @@ class HomeViewModel extends AbstractViewModel<HomeState> {
     updateState(currentState.apply(loading: false));
   }
 
-  void deleteEntry(SoundModel model) async {
+  Future<void> deleteEntry(SoundModel model) async {
 
     updateState(currentState.apply(loading: true));
 
@@ -69,7 +69,7 @@ class HomeViewModel extends AbstractViewModel<HomeState> {
     updateState(currentState.apply(loading: false));
   }
 
-  void saveNewOrder(List<dynamic> newItems) async {
+  Future<void> saveNewOrder(List<dynamic> newItems) async {
     for (int i = 0; i < newItems.length; i++) {
       newItems[i].index = i;
       await _database.into(_database.dBSoundModel).insertOnConflictUpdate(DBSoundModelCompanion.insert(

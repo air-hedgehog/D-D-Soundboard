@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:d_n_d_soundboard/add_screen/add_screen.dart';
 import 'package:d_n_d_soundboard/constants.dart';
 import 'package:d_n_d_soundboard/extensions.dart';
+import 'package:d_n_d_soundboard/home_screen/sound_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
 import 'package:view_model/widget_state.dart';
@@ -43,52 +45,7 @@ class _HomeScreenState
             viewModel.saveNewOrder(reorderedListFunction(state.items));
           },
           children: state.items
-              .map(
-                (e) =>
-                    SizedBox(
-                          width: MAIN_ITEM_WIDTH,
-                          height: MAIN_ITEM_HEIGHT,
-                          child: Column(
-                            //spacing: MARGIN_DEFAULT,
-                            children: [
-                              SizedBox(
-                                height: MAIN_ITEM_WIDTH,
-                                width: MAIN_ITEM_WIDTH,
-                                child: e.image == null
-                                    ? Icon(CupertinoIcons.photo)
-                                    : Image.file(
-                                        File(e.image!.path),
-                                        fit: BoxFit.cover,
-                                      ),
-                              ),
-
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(MARGIN_DEFAULT),
-                                  child: Text(
-                                    e.displayName,
-                                    style: CupertinoTheme.of(
-                                      context,
-                                    ).textTheme.textStyle.copyWith(fontSize: 14),
-                                    maxLines: 5,
-                                    softWrap: true,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                        .wrapInRoundedRectangle(
-                          CupertinoColors.transparent,
-                          radius: RADIUS_DEFAULT,
-                          strokeWidth: 1.0,
-                          strokeColor: CupertinoTheme.of(
-                            context,
-                          ).primaryContrastingColor,
-                          key: Key(e.uuid),
-                        ),
-              )
+              .map((e) => SoundGridViewHolder(key: Key(e.uuid), model: e))
               .toList(),
           builder: (children) {
             return GridView(
@@ -104,6 +61,66 @@ class _HomeScreenState
           },
         ),
       ),
+    );
+  }
+}
+
+class SoundGridViewHolder extends StatefulWidget {
+  const SoundGridViewHolder({super.key, required this.model});
+
+  final SoundModel model;
+
+  @override
+  State<SoundGridViewHolder> createState() => _SoundGridViewHolderState();
+}
+
+class _SoundGridViewHolderState extends State<SoundGridViewHolder> {
+  final AudioPlayer player = AudioPlayer();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: MAIN_ITEM_WIDTH,
+      height: MAIN_ITEM_HEIGHT,
+      child: Column(
+        spacing: MARGIN_DEFAULT,
+        children: [
+          SizedBox(
+            height: MAIN_ITEM_WIDTH,
+            width: MAIN_ITEM_WIDTH,
+            child: widget.model.image == null
+                ? Icon(CupertinoIcons.photo)
+                : Image.file(File(widget.model.image!.path), fit: BoxFit.cover),
+          ),
+
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(MARGIN_DEFAULT),
+              child: Text(
+                widget.model.displayName,
+                style: CupertinoTheme.of(
+                  context,
+                ).textTheme.textStyle.copyWith(fontSize: 14),
+                maxLines: 5,
+                softWrap: true,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ).setOnClickListener(() {
+      if (player.state == PlayerState.playing) {
+        player.pause();
+      } else {
+        player.play(DeviceFileSource(widget.model.sound.path));
+      }
+
+    }).wrapInRoundedRectangle(
+      CupertinoColors.transparent,
+      radius: RADIUS_DEFAULT,
+      strokeWidth: 1.0,
+      strokeColor: CupertinoTheme.of(context).primaryContrastingColor,
     );
   }
 }
