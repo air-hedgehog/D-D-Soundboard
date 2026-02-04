@@ -4,8 +4,8 @@ import 'package:cross_file/cross_file.dart';
 import 'package:d_n_d_soundboard/db/database.dart';
 import 'package:d_n_d_soundboard/di.dart';
 import 'package:d_n_d_soundboard/home_screen/sound_model.dart';
+import 'package:drift/drift.dart';
 import 'package:flutter/widgets.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:view_model/view_model.dart';
 
 import 'home_state.dart';
@@ -25,6 +25,7 @@ class HomeViewModel extends AbstractViewModel<HomeState> {
     List<DBSoundModelData> allItems = await _database
         .select(_database.dBSoundModel)
         .get();
+    allItems.sort((a, b) => a.index.compareTo(b.index));
     currentState.items.clear();
     currentState.items.addAll(
       allItems.map(
@@ -66,5 +67,19 @@ class HomeViewModel extends AbstractViewModel<HomeState> {
     await refresh();
 
     updateState(currentState.apply(loading: false));
+  }
+
+  void saveNewOrder(List<dynamic> newItems) async {
+    for (int i = 0; i < newItems.length; i++) {
+      newItems[i].index = i;
+      await _database.into(_database.dBSoundModel).insertOnConflictUpdate(DBSoundModelCompanion.insert(
+        index: newItems[i].index,
+        uuid: newItems[i].uuid,
+        soundPath: (newItems[i] as SoundModel).sound.path,
+        displayName: newItems[i].displayName,
+        imagePath: Value((newItems[i] as SoundModel).image?.path),
+      ));
+    }
+    await refresh();
   }
 }

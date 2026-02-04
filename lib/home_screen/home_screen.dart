@@ -38,7 +38,10 @@ class _HomeScreenState
       ),
       child: SafeArea(
         child: ReorderableBuilder(
-          enableDraggable: false,
+          enableDraggable: true,
+          onReorder: (ReorderedListFunction reorderedListFunction) {
+            viewModel.saveNewOrder(reorderedListFunction(state.items));
+          },
           children: state.items
               .map(
                 (e) =>
@@ -76,9 +79,6 @@ class _HomeScreenState
                             ],
                           ),
                         )
-                        .setOnLongClickListener(() {
-                          viewModel.deleteEntry(e);
-                        })
                         .wrapInRoundedRectangle(
                           CupertinoColors.transparent,
                           radius: RADIUS_DEFAULT,

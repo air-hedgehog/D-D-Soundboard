@@ -5,6 +5,10 @@ import 'package:path_provider/path_provider.dart';
 part 'database.g.dart';
 
 class DBSoundModel extends Table {
+
+  @override
+  Set<Column> get primaryKey => {uuid};
+
   TextColumn get uuid => text().named("uuid")();
 
   IntColumn get index => integer().named("index")();

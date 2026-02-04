@@ -125,7 +125,7 @@ class $DBSoundModelTable extends DBSoundModel
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => const {};
+  Set<GeneratedColumn> get $primaryKey => {uuid};
   @override
   DBSoundModelData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';

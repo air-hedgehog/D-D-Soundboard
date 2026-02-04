@@ -5,7 +5,7 @@ class SoundModel {
   final String displayName;
   final XFile? image;
   final XFile sound;
-  final int index;
+  int index;
 
   SoundModel({
     required this.uuid,
