@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.10.7
+  sdk: ^3.10.8
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -39,12 +39,10 @@ dependencies:
       url: git@github.com:air-hedgehog/dart_view_model.git
       ref: 026f3ebda287acbc1822f19aefad7fcf1f5bc9e2
       path: annotation
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
   flutter_localizations:
     sdk: flutter
+  drift: ^2.30.1
+  drift_flutter: ^0.2.8
   intl: any
   flutter_reorderable_grid_view: ^5.5.2
   uuid: ^4.5.2
@@ -53,11 +51,13 @@ dependencies:
   cross_file: ^0.3.5+2
   mime: ^2.0.0
   path_provider: ^2.1.5
-  drift: ^2.30.1
-  drift_flutter: ^0.2.8
   file_picker: ^10.3.10
   get_it: ^9.2.0
   flutter_soloud: ^3.4.10
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.8
 
 dev_dependencies:
   flutter_test:
@@ -86,7 +86,7 @@ flutter:
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
-  uses-material-design: true
+  uses-material-design: false
 
   # To add assets to your application, add an assets section, like this:
   # assets:

@@ -1,5 +1,6 @@
-import 'package:d_n_d_soundboard/db/database.dart';
 import 'package:get_it/get_it.dart';
+
+import 'db/database.dart';
 
 
 GetIt getIt = GetIt.instance;
