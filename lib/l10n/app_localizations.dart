@@ -100,6 +100,12 @@ abstract class AppLocalizations {
   /// **'Add new'**
   String get add;
 
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
   /// No description provided for @adding_new_sounds.
   ///
   /// In en, this message translates to:

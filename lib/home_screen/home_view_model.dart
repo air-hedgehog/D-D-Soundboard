@@ -66,6 +66,8 @@ class HomeViewModel extends AbstractViewModel<HomeState> {
   Future<void> deleteEntry(SoundModel model) async {
     updateState(currentState.apply(loading: true));
 
+    manager.stop(model);
+
     try {
       File(model.sound.path).delete();
     } on FileSystemException catch (e) {

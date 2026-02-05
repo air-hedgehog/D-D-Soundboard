@@ -84,14 +84,14 @@ extension RoundedRectangleWidget on Widget {
 }
 
 extension ClickableWidget on Widget {
-  Widget setOnClickListener(GestureTapCallback? onClick, {decoration}) {
+  Widget setOnClickListener(GestureTapCallback? onClick, {decoration, GestureTapCallback? onRightClick}) {
     return onClick == null
         ? this
         : Material(
             color: Colors.transparent,
             child: Ink(
               decoration: decoration,
-              child: InkWell(onTap: onClick, child: this),
+              child: InkWell(onTap: onClick, onSecondaryTap: onRightClick, child: this),
             ),
           );
   }
