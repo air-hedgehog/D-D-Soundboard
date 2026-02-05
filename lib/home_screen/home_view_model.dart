@@ -4,40 +4,27 @@ import 'dart:io';
 import 'package:cross_file/cross_file.dart';
 import 'package:d_n_d_soundboard/db/database.dart';
 import 'package:d_n_d_soundboard/di.dart';
+import 'package:d_n_d_soundboard/home_screen/sound_manager.dart';
 import 'package:d_n_d_soundboard/home_screen/sound_model.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_soloud/flutter_soloud.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:view_model/view_model.dart';
 
 import 'home_state.dart';
 
 class HomeViewModel extends AbstractViewModel<HomeState> {
   HomeViewModel()
-    : super(HomeState(loading: false, items: [], infinitePlayersUuids: {}));
+    : super(HomeState(loading: false, items: []));
 
-  final SoLoud _soloud = SoLoud.instance;
   final AppDatabase _database = getIt<AppDatabase>();
-  final Map<String, AudioSource> sources = {};
-  final Map<String, SoundHandle> plays = {};
-  final Map<String, StreamSubscription> events = {};
+  late SoundManager manager;
 
   @override
   void getState() async {
-    await _initAudio();
+    manager = SoundManager(() {
+      updateState(currentState);
+    });
     await refresh();
-  }
-
-  Future<void> _initAudio() async {
-    final cacheDir = await getTemporaryDirectory();
-    final soloudTemp = Directory('${cacheDir.path}/SoLoudLoader-Temp-Files');
-
-    if (!await soloudTemp.exists()) {
-      await soloudTemp.create(recursive: true);
-    }
-
-    await _soloud.init();
   }
 
   Future<void> refresh() async {
@@ -59,35 +46,18 @@ class HomeViewModel extends AbstractViewModel<HomeState> {
       ),
     );
 
-    for (var item in currentState.items) {
-      sources[item.uuid] = await SoLoud.instance.loadFile(item.sound.path);
-      events[item.uuid] = sources[item.uuid]!.soundEvents.listen((event) async {
-        if (event.event == SoundEventType.handleIsNoMoreValid) {
-          plays.remove(item.uuid);
-          updateState(currentState);
-          if (currentState.infinitePlayersUuids.contains(item.uuid)) {
-            plays[item.uuid] = await SoLoud.instance.play(sources[item.uuid]!);
-          }
-        }
-      });
-    }
-
     updateState(currentState.apply(loading: false));
   }
 
-  @override
-  void dispose() async {
-    super.dispose();
-    for (var source in sources.values) {
-      await SoLoud.instance.disposeSource(source);
-    }
-  }
-
   Future<void> togglePlay(SoundModel model) async {
-    if (plays.containsKey(model.uuid)) {
-      SoLoud.instance.pauseSwitch(plays[model.uuid]!);
+    if (manager.sounds.containsKey(model.uuid)) {
+      if (manager.sounds[model.uuid]!.isPlaying) {
+        await manager.sounds[model.uuid]!.pause();
+      } else {
+        await manager.sounds[model.uuid]!.resume();
+      }
     } else {
-      plays[model.uuid] = await SoLoud.instance.play(sources[model.uuid]!);
+      await manager.playFile(model);
     }
 
     updateState(currentState);
@@ -137,17 +107,15 @@ class HomeViewModel extends AbstractViewModel<HomeState> {
   }
 
   Future<void> toggleInfinite(SoundModel model) async {
-    if (currentState.infinitePlayersUuids.contains(model.uuid)) {
-      currentState.infinitePlayersUuids.remove(model.uuid);
-    } else {
-      currentState.infinitePlayersUuids.add(model.uuid);
+    if (!manager.sounds.containsKey(model.uuid)) {
+      return;
     }
+    await manager.toggleLoop(model);
     updateState(currentState);
   }
 
-  void stop(SoundModel model) async { 
-    currentState.infinitePlayersUuids.remove(model.uuid);
-    await SoLoud.instance.stop(plays[model.uuid]!);
-    //plays.remove(model.uuid);
+  void stop(SoundModel model) async {
+    await manager.stop(model);
+    updateState(currentState);
   }
 }

@@ -125,22 +125,23 @@ class SoundGridViewHolder extends StatelessWidget {
                 child: Column(
                   spacing: 1.0,
                   children: [
-                    CupertinoButton.tinted(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(RADIUS_DEFAULT),
+                    if (viewModel.manager.sounds.containsKey(model.uuid))
+                      CupertinoButton.tinted(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(RADIUS_DEFAULT),
+                        ),
+                        foregroundColor:
+                            viewModel.manager.sounds[model.uuid]!.isLooping
+                            ? CupertinoColors.destructiveRed
+                            : null,
+                        color: viewModel.manager.sounds[model.uuid]!.isLooping
+                            ? CupertinoColors.destructiveRed
+                            : CupertinoTheme.of(context).primaryColor,
+                        child: Icon(CupertinoIcons.loop),
+                        onPressed: () {
+                          viewModel.toggleInfinite(model);
+                        },
                       ),
-                      foregroundColor:
-                          state.infinitePlayersUuids.contains(model.uuid)
-                          ? CupertinoColors.destructiveRed
-                          : null,
-                      color: state.infinitePlayersUuids.contains(model.uuid)
-                          ? CupertinoColors.destructiveRed
-                          : CupertinoTheme.of(context).primaryColor,
-                      child: Icon(CupertinoIcons.loop),
-                      onPressed: () {
-                        viewModel.toggleInfinite(model);
-                      },
-                    ),
                     CupertinoButton.tinted(
                       borderRadius: BorderRadius.all(
                         Radius.circular(RADIUS_DEFAULT),
@@ -154,7 +155,7 @@ class SoundGridViewHolder extends StatelessWidget {
                             },
                       child: Icon(CupertinoIcons.delete),
                     ),
-                    if (viewModel.plays.containsKey(model.uuid))
+                    if (viewModel.manager.sounds.containsKey(model.uuid))
                       CupertinoButton.tinted(
                         borderRadius: BorderRadius.all(
                           Radius.circular(RADIUS_DEFAULT),

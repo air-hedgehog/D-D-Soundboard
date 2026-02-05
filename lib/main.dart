@@ -1,12 +1,14 @@
 import 'package:d_n_d_soundboard/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:media_kit/media_kit.dart';
 import 'di.dart';
 import 'home_screen/home_screen.dart';
 import 'l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  MediaKit.ensureInitialized();
   await initDI();
   runApp(const MyApp());
 }

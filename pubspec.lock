@@ -26,6 +26,14 @@ packages:
       url: "git@github.com:air-hedgehog/dart_view_model.git"
     source: git
     version: "0.0.1"
+  archive:
+    dependency: transitive
+    description:
+      name: archive
+      sha256: "2fde1607386ab523f7a36bb3e7edb43bd58e6edaf2ffb29d8a6d578b297fdbbd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.7"
   args:
     dependency: transitive
     description:
@@ -316,14 +324,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.5.2"
-  flutter_soloud:
-    dependency: "direct main"
-    description:
-      name: flutter_soloud
-      sha256: "825af31ff81037a6922130f6921b127ce61b10099e6d19d7c415506c9c108b3e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.5.0-pre.0"
   flutter_svg:
     dependency: "direct main"
     description:
@@ -407,6 +407,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.2"
+  image:
+    dependency: transitive
+    description:
+      name: image
+      sha256: "492bd52f6c4fbb6ee41f781ff27765ce5f627910e1e0cbecfa3d9add5562604c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.7.2"
   intl:
     dependency: "direct main"
     description:
@@ -487,6 +495,62 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.11.1"
+  media_kit:
+    dependency: "direct main"
+    description:
+      name: media_kit
+      sha256: ae9e79597500c7ad6083a3c7b7b7544ddabfceacce7ae5c9709b0ec16a5d6643
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.6"
+  media_kit_libs_android_audio:
+    dependency: transitive
+    description:
+      name: media_kit_libs_android_audio
+      sha256: "8f8f9759e537e12d66f08bc4d5279eb1bb21a0ccc519ff3442c68a9f3b6dd68b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.3.8"
+  media_kit_libs_audio:
+    dependency: "direct main"
+    description:
+      name: media_kit_libs_audio
+      sha256: "81bf506c234e81e3ec536ba72f8f700a928543c14c345220210cae0411636316"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.7"
+  media_kit_libs_ios_audio:
+    dependency: transitive
+    description:
+      name: media_kit_libs_ios_audio
+      sha256: "78ccf04e27d6b4ba00a355578ccb39b772f00d48269a6ac3db076edf2d51934f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.4"
+  media_kit_libs_linux:
+    dependency: transitive
+    description:
+      name: media_kit_libs_linux
+      sha256: "2b473399a49ec94452c4d4ae51cfc0f6585074398d74216092bf3d54aac37ecf"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.1"
+  media_kit_libs_macos_audio:
+    dependency: transitive
+    description:
+      name: media_kit_libs_macos_audio
+      sha256: "3be21844df98f286de32808592835073cdef2c1a10078bac135da790badca950"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.4"
+  media_kit_libs_windows_audio:
+    dependency: transitive
+    description:
+      name: media_kit_libs_windows_audio
+      sha256: c2fd558cc87b9d89a801141fcdffe02e338a3b21a41a18fbd63d5b221a1b8e53
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.9"
   meta:
     dependency: transitive
     description:
@@ -623,6 +687,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.2"
+  posix:
+    dependency: transitive
+    description:
+      name: posix
+      sha256: "6323a5b0fa688b6a010df4905a56b00181479e6d10534cecfecede2aa55add61"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.0.3"
   pub_semver:
     dependency: transitive
     description:
@@ -647,6 +719,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.0"
+  safe_local_storage:
+    dependency: transitive
+    description:
+      name: safe_local_storage
+      sha256: "287ea1f667c0b93cdc127dccc707158e2d81ee59fba0459c31a0c7da4d09c755"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.3"
   shelf:
     dependency: transitive
     description:
@@ -740,6 +820,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.1"
+  synchronized:
+    dependency: transitive
+    description:
+      name: synchronized
+      sha256: c254ade258ec8282947a0acbbc90b9575b4f19673533ee46f2f6e9b3aeefd7c0
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.4.0"
   term_glyph:
     dependency: transitive
     description:
@@ -772,6 +860,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
+  uri_parser:
+    dependency: transitive
+    description:
+      name: uri_parser
+      sha256: "051c62e5f693de98ca9f130ee707f8916e2266945565926be3ff20659f7853ce"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.2"
   uuid:
     dependency: "direct main"
     description:
