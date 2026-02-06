@@ -40,38 +40,19 @@ extension RoundedRectangleWidget on Widget {
         Color strokeColor = Colors.transparent,
         double strokeWidth = 0.0,
         double radius = 0.0,
-        Key? key,
       }) {
-    final borderRadius = BorderRadius.circular(radius);
-
-    return Stack(
-      key: key,
-      children: [
-        // CONTENT + CLIP + BACKGROUND
-        ClipRRect(
-          borderRadius: borderRadius,
-          child: ColoredBox(
+    return RepaintBoundary( // ⭐ important for overlays
+      child: Material(      // ⭐ forces proper compositing on Windows
+        color: Colors.transparent,
+        child: Container(
+          decoration: BoxDecoration(
             color: fillColor,
-            child: this,
+            borderRadius: BorderRadius.circular(radius),
+            border: Border.all(color: strokeColor, width: strokeWidth),
           ),
+          child: this,
         ),
-
-        // BORDER (paint only, no layout impact)
-        if (strokeWidth > 0)
-          Positioned.fill(
-            child: IgnorePointer(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: borderRadius,
-                  border: Border.all(
-                    color: strokeColor,
-                    width: strokeWidth,
-                  ),
-                ),
-              ),
-            ),
-          ),
-      ],
+      ),
     );
   }
 
