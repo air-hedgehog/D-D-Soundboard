@@ -6,6 +6,7 @@ class SoundModel {
   final XFile? image;
   final XFile sound;
   int index;
+  double volume;
 
   SoundModel({
     required this.uuid,
@@ -13,6 +14,7 @@ class SoundModel {
     required this.sound,
     required this.index,
     required this.displayName,
+    required this.volume,
   });
 
   @override

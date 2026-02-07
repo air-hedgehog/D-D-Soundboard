@@ -53,6 +53,7 @@ class _AddScreenState extends State<AddScreen> {
                             sound: toAddEntries[i].sound,
                             index: lastIndex,
                             displayName: toAddEntries[i].displayName,
+                            volume: 1.0
                           ),
                         );
                         lastIndex++;
@@ -218,6 +219,7 @@ class _AddScreenState extends State<AddScreen> {
             soundPath: soundPath,
             displayName: entry.displayName,
             imagePath: Value(imagePath),
+            volume: Value(1.0)
           ),
         );
   }

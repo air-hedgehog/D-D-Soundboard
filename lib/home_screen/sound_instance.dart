@@ -27,11 +27,10 @@ class SoundInstance {
   Stream<bool> get playingStream => _player.stream.playing;
 
   bool get isPlaying => _player.state.playing;
-
   bool get isPaused => !_player.state.playing && !_player.state.completed;
-
   bool get isStopped => _player.state.completed;
   bool get isLooping => _player.state.playlistMode == PlaylistMode.loop;
+  double get getVolume => _player.state.volume;
 
   Future<void> pause() async {
     if (_disposed) return;

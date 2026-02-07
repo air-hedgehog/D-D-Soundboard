@@ -13,8 +13,7 @@ import 'package:view_model/view_model.dart';
 import 'home_state.dart';
 
 class HomeViewModel extends AbstractViewModel<HomeState> {
-  HomeViewModel()
-    : super(HomeState(loading: false, items: []));
+  HomeViewModel() : super(HomeState(loading: false, items: []));
 
   final AppDatabase _database = getIt<AppDatabase>();
   late SoundManager manager;
@@ -42,6 +41,7 @@ class HomeViewModel extends AbstractViewModel<HomeState> {
           sound: XFile(e.soundPath),
           index: e.index,
           displayName: e.displayName,
+          volume: e.volume ?? 1.0,
         ),
       ),
     );
@@ -57,7 +57,7 @@ class HomeViewModel extends AbstractViewModel<HomeState> {
         await manager.sounds[model.uuid]!.resume();
       }
     } else {
-      await manager.playFile(model);
+      await manager.playFile(model, volume: model.volume);
     }
 
     updateState(currentState);
@@ -102,6 +102,7 @@ class HomeViewModel extends AbstractViewModel<HomeState> {
               soundPath: (newItems[i] as SoundModel).sound.path,
               displayName: newItems[i].displayName,
               imagePath: Value((newItems[i] as SoundModel).image?.path),
+              volume: newItems[i].volume,
             ),
           );
     }
@@ -119,5 +120,26 @@ class HomeViewModel extends AbstractViewModel<HomeState> {
   void stop(SoundModel model) async {
     await manager.stop(model);
     updateState(currentState);
+  }
+
+  Future<void> setVolume(SoundModel model, double volume) async {
+    await manager.setVolume(model, volume * 100.0);
+    int? index = currentState.items.indexOf(model);
+    if (index >= 0) {
+      currentState.items[index].volume = volume;
+      updateState(currentState);
+      _database
+          .into(_database.dBSoundModel)
+          .insertOnConflictUpdate(
+            DBSoundModelCompanion.insert(
+              index: model.index,
+              uuid: model.uuid,
+              soundPath: model.sound.path,
+              displayName: model.displayName,
+              imagePath: Value(model.image?.path),
+              volume: Value(model.volume),
+            ),
+          );
+    }
   }
 }

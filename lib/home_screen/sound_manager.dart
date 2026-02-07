@@ -36,7 +36,10 @@ class SoundManager {
   Future<void> toggleLoop(SoundModel model) async {
     await sounds[model.uuid]?.setLooping(!sounds[model.uuid]!.isLooping);
   }
-  
+
+  Future<void> setVolume(SoundModel model, double volume) async {
+    await sounds[model.uuid]?.setVolume(volume);
+  }
   Future<void> stop(SoundModel model) async {
     await sounds[model.uuid]?.stop();
     sounds.remove(model.uuid);
