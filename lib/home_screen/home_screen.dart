@@ -87,20 +87,51 @@ class SoundGridViewHolder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MenuAnchor(
-      controller: controller,
-      menuChildren: [
-        Slider(value: (viewModel.manager.sounds[model.uuid]?.getVolume ?? 100.0) / 100.0, onChanged: (value) {
-          viewModel.setVolume(model, value);
-        }),
-        CupertinoButton(child: Text(context.l10n().delete), onPressed: () {
-          Navigator.pop(context);
-          viewModel.deleteEntry(model);
-        })
-      ],
-      child: SizedBox(
-            width: MAIN_ITEM_WIDTH,
-            height: MAIN_ITEM_HEIGHT,
+    return SizedBox(
+          width: MAIN_ITEM_WIDTH,
+          height: MAIN_ITEM_HEIGHT,
+          child: MenuAnchor(
+            controller: controller,
+            style: MenuStyle(
+              backgroundColor: WidgetStatePropertyAll(
+                CupertinoDynamicColor.resolve(
+                  CupertinoColors.systemBackground,
+                  context,
+                ),
+              ),
+              surfaceTintColor: const WidgetStatePropertyAll(
+                CupertinoColors.transparent,
+              ),
+              elevation: const WidgetStatePropertyAll(8),
+              shape: WidgetStatePropertyAll(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(
+                    color: CupertinoDynamicColor.resolve(
+                      CupertinoColors.separator,
+                      context,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            menuChildren: [
+              CupertinoSlider(
+                value: model.volume,
+                onChanged: (value) {
+                  viewModel.setVolume(model, value);
+                },
+              ),
+
+              CupertinoButton(
+                foregroundColor: CupertinoColors.destructiveRed,
+                child: Text(context.l10n().delete),
+                onPressed: () {
+                  controller.close();
+                  viewModel.deleteEntry(model);
+                },
+              ),
+            ],
             child: Stack(
               alignment: Alignment.topRight,
               children: [
@@ -115,8 +146,13 @@ class SoundGridViewHolder extends StatelessWidget {
                               File(model.image!.path),
                               fit: BoxFit.cover,
                             ),
+                    ).wrapInRadiusRectangle(
+                      CupertinoColors.transparent,
+                      BorderRadius.only(
+                        topLeft: Radius.circular(RADIUS_DEFAULT),
+                        topRight: Radius.circular(RADIUS_DEFAULT),
+                      ),
                     ),
-
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.all(MARGIN_DEFAULT),
@@ -174,54 +210,23 @@ class SoundGridViewHolder extends StatelessWidget {
                 ),
               ],
             ),
-          )
-          .setOnClickListener(
-            () {
-              viewModel.togglePlay(model);
-            },
-            onRightClick: () {
-              controller.open();
-            },
-          )
-          .wrapInRoundedRectangle(
-            CupertinoColors.transparent,
-            radius: RADIUS_DEFAULT,
-            strokeWidth: 1.0,
-            strokeColor: CupertinoTheme.of(
-              context,
-            ).textTheme.textStyle.color!.withAlpha(50),
           ),
-    );
+        )
+        .setOnClickListener(
+          () {
+            viewModel.togglePlay(model);
+          },
+          onRightClick: () {
+            controller.open();
+          },
+        )
+        .wrapInRoundedRectangle(
+          CupertinoColors.transparent,
+          radius: RADIUS_DEFAULT,
+          strokeWidth: 1.0,
+          strokeColor: CupertinoTheme.of(
+            context,
+          ).textTheme.textStyle.color!.withAlpha(50),
+        );
   }
-
-  void _showContextMenu(BuildContext context) {
-    showCupertinoModalPopup(
-      context: context,
-      builder: (_) => CupertinoActionSheet(
-        actions: [
-          CupertinoActionSheetAction(
-            isDestructiveAction: true,
-            onPressed: () {
-              Navigator.pop(context);
-              viewModel.deleteEntry(model);
-            },
-            child: Text(context.l10n().delete),
-          ),
-          CupertinoActionSheetAction(
-            isDestructiveAction: true,
-            onPressed: () {
-              Navigator.pop(context);
-              viewModel.deleteEntry(model);
-            },
-            child: Text(context.l10n().delete),
-          ),
-        ],
-        cancelButton: CupertinoActionSheetAction(
-          onPressed: () => Navigator.pop(context),
-          child: Text(context.l10n().cancel),
-        ),
-      ),
-    );
-  }
-
 }

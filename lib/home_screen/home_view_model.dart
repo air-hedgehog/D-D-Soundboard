@@ -57,7 +57,7 @@ class HomeViewModel extends AbstractViewModel<HomeState> {
         await manager.sounds[model.uuid]!.resume();
       }
     } else {
-      await manager.playFile(model, volume: model.volume);
+      await manager.playFile(model, volume: model.volume * 100.0);
     }
 
     updateState(currentState);
@@ -102,7 +102,7 @@ class HomeViewModel extends AbstractViewModel<HomeState> {
               soundPath: (newItems[i] as SoundModel).sound.path,
               displayName: newItems[i].displayName,
               imagePath: Value((newItems[i] as SoundModel).image?.path),
-              volume: newItems[i].volume,
+              volume: Value(newItems[i].volume),
             ),
           );
     }
