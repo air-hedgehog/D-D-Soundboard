@@ -66,7 +66,7 @@ class HomeViewModel extends AbstractViewModel<HomeState> {
           plays.remove(item.uuid);
           updateState(currentState);
           if (currentState.infinitePlayersUuids.contains(item.uuid)) {
-            plays[item.uuid] = await SoLoud.instance.play(sources[item.uuid]!);
+            plays[item.uuid] = SoLoud.instance.play(sources[item.uuid]!);
           }
         }
       });
@@ -87,7 +87,7 @@ class HomeViewModel extends AbstractViewModel<HomeState> {
     if (plays.containsKey(model.uuid)) {
       SoLoud.instance.pauseSwitch(plays[model.uuid]!);
     } else {
-      plays[model.uuid] = await SoLoud.instance.play(sources[model.uuid]!);
+      plays[model.uuid] = SoLoud.instance.play(sources[model.uuid]!);
     }
 
     updateState(currentState);
